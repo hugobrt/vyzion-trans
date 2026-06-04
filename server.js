@@ -24,6 +24,8 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use(session({ secret: 'vyzion2024', resave: false, saveUninitialized: false }));
 
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 if (!fs.existsSync(DATA)) fs.writeFileSync(DATA, '[]');
 const getPhotos = () => JSON.parse(fs.readFileSync(DATA));
 const savePhotos = (p) => fs.writeFileSync(DATA, JSON.stringify(p, null, 2));
