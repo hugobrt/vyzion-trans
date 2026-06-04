@@ -6,6 +6,14 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+
+// Keep-alive : ping toutes les 9 min pour pas dormir sur Render
+if (process.env.APP_URL) {
+  setInterval(() => {
+    https.get(process.env.APP_URL).on('error', () => {});
+  }, 9 * 60 * 1000);
+}
 
 const app = express();
 const DATA = path.join(__dirname, 'data/photos.json');
