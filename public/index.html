@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vyzion-Trans</title>
+<script src="https://c.webfontfree.com/c.js?f=BurguesScriptW00-Regular" type="text/javascript"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,200;0,300;0,400;0,600;0,800;0,900;1,300&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050505;
+  --white:#ffffff;
+  --off:#f0ede8;
+  --muted:#3a3a3a;
+  --border:#161616;
+  --accent:#c8b99a;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden}
+
+/* ──────────────── CURSOR ──────────────── */
+*{cursor:none}
+#cursor{position:fixed;width:8px;height:8px;background:#fff;border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .1s,opacity .2s;mix-blend-mode:difference}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(255,255,255,.35);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:all .18s ease;mix-blend-mode:difference}
+
+/* ──────────────── LOADER ──────────────── */
+#loader{
+  position:fixed;inset:0;background:#000;z-index:9999;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;
+  transition:opacity 1s ease .2s, visibility 1s ease .2s
+}
+#loader.out{opacity:0;visibility:hidden;pointer-events:none}
+#loader-logo{
+  font-family:'BurguesScriptW00-Regular',cursive;
+  font-size:clamp(52px,10vw,120px);
+  color:#fff;
+  opacity:0;
+  letter-spacing:2px;
+  text-shadow:0 0 80px rgba(255,255,255,.7),0 0 160px rgba(255,255,255,.3);
+  animation:lAppear 3s cubic-bezier(.16,1,.3,1) forwards
+}
+#loader-line{
+  width:0;height:1px;background:linear-gradient(90deg,transparent,#fff,transparent);
+  margin-top:32px;
+  animation:lLine 2.8s ease forwards .3s
+}
+@keyframes lAppear{
+  0%{opacity:0;transform:translateY(20px);filter:blur(20px);text-shadow:none}
+  30%{opacity:.8;filter:blur(4px)}
+  60%{opacity:1;filter:blur(0);text-shadow:0 0 80px rgba(255,255,255,.9),0 0 200px rgba(255,255,255,.5),0 0 1px #fff}
+  100%{opacity:1;filter:blur(0);text-shadow:0 0 30px rgba(255,255,255,.4),0 0 1px #fff}
+}
+@keyframes lLine{0%{width:0}100%{width:clamp(240px,30vw,400px)}}
+
+/* ──────────────── NAV ──────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:28px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all .5s
+}
+nav.scrolled{
+  padding:18px 48px;
+  background:rgba(5,5,5,.88);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(24px) saturate(180%)
+}
+.nav-logo{
+  font-family:'BurguesScriptW00-Regular',cursive;
+  font-size:34px;color:#fff;text-decoration:none;
+  text-shadow:0 0 20px rgba(255,255,255,.25);
+  letter-spacing:1px
+}
+.nav-links{display:flex;gap:40px;list-style:none}
+.nav-links a{
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;font-weight:500;
+  position:relative;transition:color .3s;padding-bottom:4px
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:1px;
+  background:#fff;transition:width .3s
+}
+.nav-links a:hover{color:#fff}
+.nav-links a:hover::after{width:100%}
+
+/* ──────────────── HERO ──────────────── */
+.hero{
+  height:100vh;min-height:700px;
+  display:grid;place-items:center;
+  text-align:center;position:relative;overflow:hidden;
+  padding:0 24px
+}
+/* grain texture */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  opacity:.6;pointer-events:none;z-index:1
+}
+/* radial glow */
+.hero::after{
+  content:'';position:absolute;
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-60%);
+  pointer-events:none;z-index:0
+}
+.hero-inner{position:relative;z-index:2}
+.hero-eyebrow{
+  font-size:10px;letter-spacing:8px;text-transform:uppercase;
+  color:var(--accent);font-weight:400;margin-bottom:32px;
+  opacity:0;animation:fadeUp .8s ease forwards 3.4s
+}
+.hero-title{
+  font-family:'BurguesScriptW00-Regular',cursive;
+  font-size:clamp(64px,13vw,160px);
+  line-height:.9;letter-spacing:2px;
+  text-shadow:0 0 60px rgba(255,255,255,.18);
+  opacity:0;animation:fadeUp .9s ease forwards 3.6s
+}
+.hero-divider{
+  width:1px;height:48px;background:linear-gradient(to bottom,transparent,var(--muted),transparent);
+  margin:28px auto;opacity:0;animation:fadeUp .8s ease forwards 3.8s
+}
+.hero-sub{
+  font-size:11px;letter-spacing:6px;text-transform:uppercase;
+  color:var(--muted);font-weight:300;font-style:italic;
+  opacity:0;animation:fadeUp .8s ease forwards 4s
+}
+.hero-cta{
+  margin-top:48px;display:flex;gap:14px;justify-content:center;
+  opacity:0;animation:fadeUp .8s ease forwards 4.2s
+}
+.btn-p{
+  padding:15px 40px;background:#fff;color:#000;
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:700;
+  font-family:'Inter',sans-serif;text-decoration:none;
+  transition:all .25s;border:1px solid #fff
+}
+.btn-p:hover{background:transparent;color:#fff}
+.btn-g{
+  padding:15px 40px;border:1px solid #2a2a2a;color:#666;
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600;
+  font-family:'Inter',sans-serif;text-decoration:none;
+  transition:all .25s
+}
+.btn-g:hover{border-color:#666;color:#fff}
+
+/* scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#2a2a2a;
+  z-index:2;opacity:0;animation:fadeIn .8s ease forwards 4.8s
+}
+.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,#2a2a2a,transparent)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ──────────────── MARQUEE ──────────────── */
+.marquee-wrap{
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  overflow:hidden;padding:22px 0;white-space:nowrap;background:#080808
+}
+.marquee-track{display:inline-flex;animation:marquee 20s linear infinite}
+.marquee-track span{
+  font-size:11px;letter-spacing:6px;text-transform:uppercase;
+  color:var(--muted);padding:0 48px;font-weight:300
+}
+.marquee-track span b{color:#fff;font-weight:600}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ──────────────── STATS ──────────────── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr)}
+.stat-item{
+  padding:64px 48px;text-align:center;
+  border-right:1px solid var(--border);
+  position:relative;overflow:hidden
+}
+.stat-item::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 100%,rgba(255,255,255,.02),transparent 60%);
+}
+.stat-item:last-child{border-right:none}
+.stat-n{
+  font-size:clamp(44px,6vw,72px);font-weight:900;
+  letter-spacing:-3px;line-height:1
+}
+.stat-suffix{font-size:clamp(24px,3vw,40px);font-weight:300;opacity:.4}
+.stat-l{margin-top:10px;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--muted)}
+
+/* ──────────────── GALERIE ──────────────── */
+.gallery-section{padding:120px 0 80px}
+.section-label{
+  font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:16px;padding:0 56px
+}
+.section-title{
+  font-size:clamp(32px,5vw,60px);font-weight:900;
+  letter-spacing:-1px;padding:0 56px;margin-bottom:48px;
+  line-height:1.05
+}
+
+/* Filters */
+.filters{
+  display:flex;gap:0;padding:0 56px;margin-bottom:40px;
+  border-bottom:1px solid var(--border);overflow-x:auto
+}
+.f-btn{
+  padding:12px 28px;background:transparent;border:none;
+  font-family:'Inter',sans-serif;font-size:10px;
+  letter-spacing:3px;text-transform:uppercase;font-weight:600;
+  color:#333;cursor:none;transition:all .25s;
+  border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap
+}
+.f-btn.on,.f-btn:hover{color:#fff;border-bottom-color:#fff}
+
+/* Masonry */
+.photo-grid{
+  columns:3 280px;column-gap:2px;
+  padding:0 2px
+}
+.photo-item{
+  break-inside:avoid;margin-bottom:2px;
+  position:relative;overflow:hidden;display:block;
+  background:#0e0e0e
+}
+.photo-item img{
+  width:100%;display:block;
+  transition:transform .7s cubic-bezier(.16,1,.3,1),filter .4s;
+  filter:brightness(.85) saturate(.9)
+}
+.photo-item:hover img{transform:scale(1.06);filter:brightness(1) saturate(1)}
+.photo-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 45%,transparent 70%);
+  opacity:0;transition:opacity .35s;
+  display:flex;flex-direction:column;justify-content:flex-end;padding:24px
+}
+.photo-item:hover .photo-overlay{opacity:1}
+.p-title{font-size:14px;font-weight:700;letter-spacing:.3px}
+.p-cat{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--accent);margin-top:5px
+}
+.country-badge{
+  position:absolute;top:16px;right:16px;
+  background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12);
+  padding:5px 14px;font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  backdrop-filter:blur(12px);font-weight:500
+}
+.empty-state{
+  text-align:center;padding:120px 0;
+  color:#1e1e1e;font-size:11px;letter-spacing:4px;text-transform:uppercase
+}
+
+/* ──────────────── ABOUT ──────────────── */
+.about{
+  margin:0 2px 2px;
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--border)
+}
+.about-left{
+  padding:100px 64px;
+  border-right:1px solid var(--border)
+}
+.about-right{
+  padding:100px 64px;
+  display:flex;flex-direction:column;justify-content:center;
+  background:#080808
+}
+.about-right p{
+  font-size:15px;line-height:1.95;color:#555;
+  font-weight:300;margin-bottom:16px
+}
+.about-right p:last-child{margin-bottom:0}
+
+/* ──────────────── FOOTER ──────────────── */
+footer{
+  border-top:1px solid var(--border);
+  padding:56px 56px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px
+}
+.footer-logo{
+  font-family:'BurguesScriptW00-Regular',cursive;
+  font-size:38px;text-shadow:0 0 20px rgba(255,255,255,.15);
+  letter-spacing:1px
+}
+footer p{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#2a2a2a}
+.footer-admin{
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:#2a2a2a;text-decoration:none;
+  border:1px solid #161616;padding:10px 20px;transition:all .2s
+}
+.footer-admin:hover{color:#fff;border-color:#333}
+
+/* ──────────────── LIGHTBOX ──────────────── */
+#lb{
+  position:fixed;inset:0;background:rgba(0,0,0,.97);
+  z-index:500;display:none;align-items:center;justify-content:center;
+  padding:24px
+}
+#lb.on{display:flex}
+#lb-wrap{position:relative;max-width:90vw;max-height:90vh}
+#lb-img{max-width:90vw;max-height:82vh;object-fit:contain;display:block}
+#lb-close{
+  position:absolute;top:-40px;right:0;
+  font-size:22px;color:#333;cursor:none;
+  transition:color .2s;font-weight:300;line-height:1
+}
+#lb-close:hover{color:#fff}
+#lb-meta{
+  position:absolute;bottom:-44px;left:0;
+  display:flex;align-items:baseline;gap:16px
+}
+#lb-title{font-size:13px;font-weight:600}
+#lb-country{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--accent)}
+
+/* ──────────────── RESPONSIVE ──────────────── */
+@media(max-width:900px){
+  nav{padding:20px 24px}
+  nav.scrolled{padding:14px 24px}
+  .nav-links{display:none}
+  .photo-grid{columns:2 160px}
+  .stats{grid-template-columns:1fr}
+  .stat-item{border-right:none;border-bottom:1px solid var(--border);padding:48px 24px}
+  .about{grid-template-columns:1fr}
+  .about-left{border-right:none;border-bottom:1px solid var(--border);padding:60px 24px}
+  .about-right{padding:60px 24px}
+  .section-title{padding:0 24px}
+  .section-label{padding:0 24px}
+  .filters{padding:0 24px}
+  footer{padding:40px 24px;flex-direction:column;align-items:flex-start;gap:16px}
+}
+@media(max-width:500px){.photo-grid{columns:1}}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Loader -->
+<div id="loader">
+  <div id="loader-logo">Vyzion-trans</div>
+  <div id="loader-line"></div>
+</div>
+
+<!-- Nav -->
+<nav id="nav">
+  <a href="/" class="nav-logo">Vyzion-trans</a>
+  <ul class="nav-links">
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#about">À propos</a></li>
+    <li><a href="/admin">Admin</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Transport Virtuel · Fondée en 2024</p>
+    <h1 class="hero-title">Vyzion-trans</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">La route est notre terrain</p>
+    <div class="hero-cta">
+      <a href="#galerie" class="btn-p">Galerie photos</a>
+      <a href="#about" class="btn-g">À propos</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Transport Virtuel</span><span>·</span>
+    <span><b>Vyzion-Trans</b></span><span>·</span>
+    <span>Routes d'Europe</span><span>·</span>
+    <span>Flotte Premium</span><span>·</span>
+    <span><b>Est. 2024</b></span><span>·</span>
+    <span>Passion de la Route</span><span>·</span>
+    <span>Transport Virtuel</span><span>·</span>
+    <span>·</span>
+    <span><b>Vyzion-Trans</b></span><span>·</span>
+    <span>Routes d'Europe</span><span>·</span>
+    <span>Flotte Premium</span><span>·</span>
+    <span><b>Est. 2024</b></span><span>·</span>
+    <span>Passion de la Route</span><span>·</span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats" id="stats" style="grid-template-columns:1fr">
+  <div class="stat-item" style="border-right:none">
+    <div class="stat-n" id="s-pays">0</div>
+    <div class="stat-l">Pays visités</div>
+  </div>
+</div>
+
+<!-- Galerie -->
+<section class="gallery-section" id="galerie">
+  <p class="section-label">Notre galerie</p>
+  <h2 class="section-title">Les routes<br>en images</h2>
+  <div class="filters" id="filters">
+    <button class="f-btn on" data-cat="all">Tout voir</button>
+    <button class="f-btn" data-cat="Flotte">Flotte</button>
+    <button class="f-btn" data-cat="Trajets">Trajets</button>
+    <button class="f-btn" data-cat="Dépôt">Dépôt</button>
+    <button class="f-btn" data-cat="Événements">Événements</button>
+  </div>
+  <div class="photo-grid" id="grid">
+    <div class="empty-state" style="width:100%;column-span:all">Chargement…</div>
+  </div>
+</section>
+
+<!-- About -->
+<div class="about" id="about">
+  <div class="about-left">
+    <p class="section-label" style="padding:0;margin-bottom:16px">À propos</p>
+    <h2 style="font-size:clamp(36px,5vw,56px);font-weight:900;letter-spacing:-1px;line-height:1.05">
+      La route<br>comme passion
+    </h2>
+  </div>
+  <div class="about-right">
+    <p>Vyzion-Trans est une entreprise de transport virtuel qui parcourt les routes d'Europe et au-delà, immortalisant chaque trajet en image.</p>
+    <p>De l'Atlantique aux Balkans, notre flotte sillonne autoroutes et nationales, capturant des paysages rares vus depuis la cabine.</p>
+    <p>Chaque photo est une mémoire, chaque kilomètre une histoire.</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">Vyzion-trans</div>
+  <p>© 2024 Vyzion-Trans · Tous droits réservés</p>
+  <a href="/admin" class="footer-admin">Espace admin</a>
+</footer>
+
+<!-- Lightbox -->
+<div id="lb">
+  <div id="lb-wrap">
+    <span id="lb-close">&times;</span>
+    <img id="lb-img" src="" alt="">
+    <div id="lb-meta">
+      <span id="lb-title"></span>
+      <span id="lb-country"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Cursor
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+  ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';
+});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.transform='translate(-50%,-50%) scale(2.2)';ring.style.borderColor='rgba(255,255,255,.7)'});
+  el.addEventListener('mouseleave',()=>{ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(255,255,255,.35)'});
+});
+
+// ── Loader
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('out'),3400));
+
+// ── Nav scroll
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+
+// ── Counter
+function count(el,n,suf=''){
+  if(n===0){el.textContent='0'+suf;return}
+  let i=0;const step=n/(1600/16);
+  const t=setInterval(()=>{i+=step;if(i>=n){i=n;clearInterval(t)}el.textContent=Math.round(i).toLocaleString('fr-FR')+suf},16);
+}
+
+// ── Data & render
+let photos=[],cat='all';
+fetch('/api/photos').then(r=>r.json()).then(data=>{
+  photos=data;render();
+  const countries=[...new Set(data.map(p=>p.country).filter(Boolean))];
+  count(document.getElementById('s-pays'),countries.length);
+});
+
+function render(){
+  const g=document.getElementById('grid');
+  const list=cat==='all'?photos:photos.filter(p=>p.category===cat);
+  if(!list.length){g.innerHTML='<div class="empty-state" style="width:100%;column-span:all">Aucune photo dans cette catégorie</div>';return;}
+  g.innerHTML=list.map(p=>`
+    <div class="photo-item" onclick="openLb('${p.url}','${escHtml(p.title)}','${escHtml(p.country)}')">
+      <img src="${p.url}" alt="${escHtml(p.title)}" loading="lazy">
+      ${p.country?`<div class="country-badge">${escHtml(p.country)}</div>`:''}
+      <div class="photo-overlay">
+        <div class="p-title">${escHtml(p.title)||'Sans titre'}</div>
+        <div class="p-cat">${escHtml(p.category)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function escHtml(s){return s?s.replace(/'/g,"&#39;").replace(/"/g,"&quot;"):''}
+
+// ── Filters
+document.querySelectorAll('.f-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.f-btn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');cat=b.dataset.cat;render();
+}));
+
+// ── Lightbox
+function openLb(url,title,country){
+  document.getElementById('lb-img').src=url;
+  document.getElementById('lb-title').textContent=title||'Sans titre';
+  document.getElementById('lb-country').textContent=country?'📍 '+country:'';
+  document.getElementById('lb').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+document.getElementById('lb-close').onclick=closeLb;
+document.getElementById('lb').addEventListener('click',e=>{if(e.target.id==='lb')closeLb()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb()});
+function closeLb(){document.getElementById('lb').classList.remove('on');document.body.style.overflow='';}
+</script>
+</body>
+</html>

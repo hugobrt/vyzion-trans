@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Vyzion-Trans</title>
+<script src="https://c.webfontfree.com/c.js?f=BurguesScriptW00-Regular" type="text/javascript"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050505;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.box{width:100%;max-width:340px;padding:0 24px}
+.logo{font-family:'BurguesScriptW00-Regular',cursive;font-size:56px;text-align:center;text-shadow:0 0 30px rgba(255,255,255,.25);margin-bottom:6px;letter-spacing:1px}
+.sub{text-align:center;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#2a2a2a;margin-bottom:44px}
+.err{color:#ff4444;font-size:10px;letter-spacing:2px;text-align:center;margin-bottom:16px;display:none;text-transform:uppercase}
+input{width:100%;padding:16px;background:#0e0e0e;border:1px solid #161616;color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;margin-bottom:10px;transition:border-color .2s}
+input:focus{border-color:#2a2a2a}
+button{width:100%;padding:16px;background:#fff;color:#000;border:none;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s;margin-top:6px}
+button:hover{background:#e0e0e0}
+a{display:block;text-align:center;margin-top:20px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#2a2a2a;text-decoration:none;transition:color .2s}
+a:hover{color:#fff}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">Vyzion-trans</div>
+  <div class="sub">Administration</div>
+  <div class="err" id="err">Mot de passe incorrect</div>
+  <form method="POST" action="/login">
+    <input type="password" name="password" placeholder="Mot de passe" autofocus autocomplete="off">
+    <button type="submit">Connexion</button>
+  </form>
+  <a href="/">← Retour au site</a>
+</div>
+<script>if(new URLSearchParams(location.search).get('err'))document.getElementById('err').style.display='block'</script>
+</body>
+</html>

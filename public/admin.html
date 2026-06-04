@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Vyzion-Trans</title>
+<script src="https://c.webfontfree.com/c.js?f=BurguesScriptW00-Regular" type="text/javascript"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050505;--card:#0a0a0a;--border:#161616;--muted:#333}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:#fff;min-height:100vh}
+
+header{
+  height:56px;background:#080808;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+  position:sticky;top:0;z-index:10
+}
+.h-logo{font-family:'BurguesScriptW00-Regular',cursive;font-size:24px;text-shadow:0 0 12px rgba(255,255,255,.2);letter-spacing:1px}
+.h-links{display:flex;align-items:center;gap:24px}
+.h-links a{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.h-links a:hover{color:#fff}
+
+main{max-width:1000px;margin:0 auto;padding:56px 24px}
+
+.upload-block{background:var(--card);border:1px solid var(--border);padding:40px;margin-bottom:56px}
+.block-title{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:32px}
+
+.drop-zone{
+  border:1px dashed #1a1a1a;padding:52px 24px;text-align:center;
+  cursor:pointer;transition:all .25s;margin-bottom:20px;position:relative
+}
+.drop-zone:hover,.drop-zone.over{border-color:#333;background:#0d0d0d}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+.drop-zone p{font-size:12px;color:#2a2a2a;letter-spacing:1px}
+.drop-zone span{color:#555;text-decoration:underline}
+
+.preview{width:100%;max-height:240px;object-fit:cover;display:none;margin-bottom:20px}
+
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:7px}
+label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
+input[type=text],select{
+  padding:13px 14px;background:#080808;border:1px solid var(--border);
+  color:#fff;font-family:'Inter',sans-serif;font-size:13px;
+  outline:none;transition:border-color .2s;width:100%
+}
+input[type=text]:focus,select:focus{border-color:#2a2a2a}
+select option{background:#080808}
+
+.pub-btn{
+  margin-top:20px;padding:14px 36px;
+  background:#fff;color:#000;border:none;
+  font-family:'Inter',sans-serif;font-size:10px;
+  letter-spacing:4px;text-transform:uppercase;font-weight:700;
+  cursor:pointer;transition:background .2s
+}
+.pub-btn:hover{background:#ddd}
+.pub-btn:disabled{background:#111;color:#333;cursor:not-allowed}
+.ok{color:#4dffaa;font-size:10px;letter-spacing:2px;margin-top:12px;display:none;text-transform:uppercase}
+
+.pg-title{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2px}
+.pi{position:relative;aspect-ratio:4/3;overflow:hidden;background:#0a0a0a}
+.pi img{width:100%;height:100%;object-fit:cover;filter:brightness(.8);transition:filter .3s}
+.pi:hover img{filter:brightness(1)}
+.pi-ov{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .2s;display:flex;align-items:flex-start;justify-content:flex-end;padding:10px}
+.pi:hover .pi-ov{opacity:1}
+.del{background:rgba(200,0,0,.9);border:none;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.del:hover{background:red}
+.pi-info{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:11px;color:#aaa}
+.pi-info strong{display:block;font-size:12px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.no-p{color:#1e1e1e;font-size:10px;letter-spacing:4px;text-transform:uppercase;padding:60px 0;text-align:center}
+
+@media(max-width:600px){.fields{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-logo">Vyzion-trans</div>
+  <div class="h-links">
+    <a href="/" target="_blank">← Voir le site</a>
+    <a href="/logout">Déconnexion</a>
+  </div>
+</header>
+
+<main>
+  <div class="upload-block">
+    <div class="block-title">Ajouter une photo</div>
+
+    <div class="drop-zone" id="drop">
+      <p>Glisse ta photo ici ou <span onclick="document.getElementById('fi').click()">parcourir</span></p>
+      <input type="file" id="fi" accept="image/*">
+    </div>
+    <img class="preview" id="prev" src="" alt="preview">
+
+    <div class="fields">
+      <div class="field"><label>Titre</label><input type="text" id="ttl" placeholder="Ex : Nuit sur l'A1"></div>
+      <div class="field"><label>Pays</label><input type="text" id="cty" placeholder="Ex : France"></div>
+    </div>
+    <div class="field"><label>Catégorie</label>
+      <select id="cat">
+        <option>Flotte</option>
+        <option>Trajets</option>
+        <option>Dépôt</option>
+        <option>Événements</option>
+      </select>
+    </div>
+
+    <button class="pub-btn" id="pub-btn" onclick="upload()">Publier</button>
+    <div class="ok" id="ok-msg">✓ Photo publiée avec succès</div>
+  </div>
+
+  <div class="pg-title">Photos publiées</div>
+  <div class="pg" id="pg"></div>
+</main>
+
+<script>
+let file=null;
+const fi=document.getElementById('fi'),drop=document.getElementById('drop'),prev=document.getElementById('prev');
+
+fi.addEventListener('change',()=>{if(fi.files[0])handle(file=fi.files[0])});
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{
+  e.preventDefault();drop.classList.remove('over');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/'))handle(file=f);
+});
+
+function handle(f){
+  const r=new FileReader();
+  r.onload=e=>{prev.src=e.target.result;prev.style.display='block'};
+  r.readAsDataURL(f);
+}
+
+async function upload(){
+  if(!file)return alert('Sélectionne une photo');
+  const btn=document.getElementById('pub-btn');
+  btn.disabled=true;btn.textContent='Upload…';
+  const fd=new FormData();
+  fd.append('photo',file);
+  fd.append('title',document.getElementById('ttl').value);
+  fd.append('country',document.getElementById('cty').value);
+  fd.append('category',document.getElementById('cat').value);
+  try{
+    const r=await fetch('/api/upload',{method:'POST',body:fd});
+    if(r.ok){
+      const ok=document.getElementById('ok-msg');ok.style.display='block';
+      setTimeout(()=>ok.style.display='none',3500);
+      file=null;prev.style.display='none';
+      document.getElementById('ttl').value='';
+      document.getElementById('cty').value='';
+      loadPhotos();
+    }
+  }finally{btn.disabled=false;btn.textContent='Publier'}
+}
+
+async function del(id){
+  if(!confirm('Supprimer cette photo ?'))return;
+  await fetch('/api/photos/'+id,{method:'DELETE'});
+  loadPhotos();
+}
+
+async function loadPhotos(){
+  const r=await fetch('/api/photos');
+  const photos=await r.json();
+  const pg=document.getElementById('pg');
+  if(!photos.length){pg.innerHTML='<div class="no-p">Aucune photo publiée</div>';return;}
+  pg.innerHTML=photos.map(p=>`
+    <div class="pi">
+      <img src="${p.url}" alt="" loading="lazy">
+      <div class="pi-ov"><button class="del" onclick="del('${p.id}')">✕</button></div>
+      <div class="pi-info"><strong>${p.title||'Sans titre'}</strong>${p.category}${p.country?' · '+p.country:''}</div>
+    </div>`).join('');
+}
+
+loadPhotos();
+</script>
+</body>
+</html>
